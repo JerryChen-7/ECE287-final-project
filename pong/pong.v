@@ -11,6 +11,27 @@ module pong (
     output VGA_G;
     output VGA_B;
 
+// from GitHub
+vga_adapter VGA(
+  .resetn(1'b1),
+  .clock(clk),
+  .colour(colour),
+  .x(x),
+  .y(y),
+  .plot(1'b1),
+  .VGA_R(VGA_R),
+  .VGA_G(VGA_G),
+  .VGA_B(VGA_B),
+  .VGA_HS(VGA_HS),
+  .VGA_VS(VGA_VS),
+  .VGA_BLANK(VGA_BLANK_N),
+  .VGA_SYNC(VGA_SYNC_N),
+  .VGA_CLK(VGA_CLK));
+defparam VGA.RESOLUTION = "160x120";
+defparam VGA.MONOCHROME = "FALSE";
+defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
+defparam VGA.BACKGROUND_IMAGE = "black.mif";
+
 reg [7:0]S;
 reg [7:0]NS;
 
