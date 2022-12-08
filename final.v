@@ -7,14 +7,15 @@ module final(
 	output VGA_VS,
 	output VGA_BLANK_N,
 	output VGA_SYNC_N,
-	output [7:0] VGA_G,
 	output [7:0] VGA_R,
+	output [7:0] VGA_G,
 	output [7:0] VGA_B,
 	output [6:0] disp_score_p1,
-	output [6:0] disp_score_p2
+	output [6:0] disp_score_p2,
+	output reg light
 );
 
-// Found VGA on GitHub (Credited in citation)
+// VGA module (from GitHub)
 vga_adapter VGA(
   .resetn(1'b1),
   .clock(clk),
@@ -35,6 +36,7 @@ defparam VGA.MONOCHROME = "FALSE";
 defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
 defparam VGA.BACKGROUND_IMAGE = "black.mif";
 
+
 reg [5:0] S;
 reg border_init;
 reg paddle_init;
@@ -48,8 +50,25 @@ reg [2:0]colour;
 reg ball_xdir, ball_ydir;
 reg [17:0]draw;
 wire frame;
-reg [2:0]p1_score;
-reg [2:0]p2_score;
+reg [3:0]p1_score;
+reg [3:0]p2_score;
+
+
+// from Chris
+parameter 
+	appleBits = 512'b00000111111000011000011111100001000001111110000000000111111000000000011111100000000001111110000010000111111000011000011111100001100001111110000110000111111000010000011111100000000001111110000000000111111000000000011111100000100001111110000110000111111000011000011111100001100001111110000100000111111000000000011111100000000001111110000000000111111000001000011111100001100001111110000110000111111000011000011111100001000001111110000000000111111000000000011111100000000001111110000010000111111000011000011111100001,
+	appleWidth = 5'd31,
+	appleHeight = 5'd16,
+	appleStart = 9'd511;
+
+reg [63:0]imageX;
+reg [63:0]imageY;
+reg [63:0]counter;
+
+parameter 
+	initX = 63'd15,
+	initY = 63'd15;
+// end from Chris
 
 
 parameter
@@ -73,25 +92,42 @@ parameter
 	P2_START		= 6'd17,
 	P1_WIN			= 6'd18,
 	P2_WIN			= 6'd19,
-	GAME_OVER		= 6'd20,
+
+/*	CURRENTLY DOES NOT WORK
+	START_DRAW_FLAG		= 6'd20,
+	INIT_DRAW_FLAG 		= 6'd21,
+	COND_DRAW_FLAG 		= 6'd22,
+	DRAW_FLAG 			= 6'd23,
+	BITCOND_DRAW_FLAG 	= 6'd24,
+	INCX_DRAW_FLAG 		= 6'd25,
+	INCY_DRAW_FLAG 		= 6'd26,
+	DEC_COUNTER_DRAW_FLAG 	= 6'd27,
+	EXIT_DRAW_FLAG 		= 6'd28,
+*/
 	ERROR 			= 6'hFFFFFF;
 
-	// Calling clock to display
-	clock(.clock(clk), .clk(frame));
+// Calling clock to display (From GitHub)
+clock(.clock(clk), .clk(frame));
 
 
 	// FSM
-	always @(posedge clk) 
-	begin
-		border_init = 1'b0;
-		paddle_init = 1'b0;
-		ball_init = 1'b0;
-		colour = 3'b000; // Background colour
-		x = 8'b00000000;
-		y = 8'b00000000;
+always @(posedge clk) 
+begin
+	border_init = 1'b0;
+	paddle_init = 1'b0;
+	ball_init = 1'b0;
+	colour = 3'b000; // Background colour
+	x = 8'b00000000;
+	y = 8'b00000000;
+	light = 1'b1;
 
-		if (~rst)
-			S = START;
+	imageX = 64'b0;
+	imageY = 64'b0;
+	counter = 64'b0;
+
+	if (~rst)
+		S = START;
+	else begin end
 
 	case (S)
 	
@@ -106,6 +142,7 @@ parameter
 			else 
 			begin
 				draw = 8'b00000000;
+				ball_x = ball_x + 1'b1; // moves ball right
 				S = INIT_P1;
 			end
 		end
@@ -148,8 +185,8 @@ parameter
 		
 		INIT_BALL: 
 		begin
-			ball_x = 8'd40;		// Placement of ball
-			ball_y = 8'd40; 	// Placement of ball
+			ball_x = 8'd40;			// Placement of ball
+			ball_y = 8'd40; 		// Placement of ball
 			ball_x = ball_x + 1'b1; // moves ball right
 			x = ball_x;
 			y = ball_y;
@@ -159,8 +196,8 @@ parameter
 		
 		IDLE:
 			if (frame)
-			S = ERASE_P1;	//Should be Erase_paddle
-	
+			S = ERASE_P1;
+
 		ERASE_P1:
 		begin
 			if (draw < 6'b100000) 
@@ -193,15 +230,19 @@ parameter
 
 		UPDATE_P1: 
 		begin
-			if (~button[2] && pad1_y < -8'd152) pad1_y = pad1_y + 1'b1; // Moves paddle up (Changes lower bound)
-			if (~button[3] && pad1_y > 8'd0) pad1_y = pad1_y - 1'b1; // Moves paddle down (Changes upper bound)							
+			if (~button[2] && pad1_y < -8'd152) 
+				pad1_y = pad1_y + 1'b1; // Moves paddle up (Changes lower bound)
+			if (~button[3] && pad1_y > 8'd0) 
+				pad1_y = pad1_y - 1'b1; // Moves paddle down (Changes upper bound)							
 			S = UPDATE_P2;
 		end
 
 		UPDATE_P2: 
 		begin
-			if (~button[0] && pad2_y < -8'd152) pad2_y = pad2_y + 1'b1; // Moves paddle up (Changes lower bound)
-			if (~button[1] && pad2_y > 8'd0) pad2_y = pad2_y - 1'b1; // Moves paddle down (Changes upper bound)							
+			if (~button[0] && pad2_y < -8'd152) 
+				pad2_y = pad2_y + 1'b1; // Moves paddle up (Changes lower bound)
+			if (~button[1] && pad2_y > 8'd0) 
+				pad2_y = pad2_y - 1'b1; // Moves paddle down (Changes upper bound)							
 			S = DRAW_P1;
 		end
 		
@@ -258,21 +299,17 @@ parameter
 			
 			if	((ball_xdir) && (ball_x > pad1_x) &&
 			   	(ball_x < pad1_x + 8'd2) && (ball_y >= pad1_y) && 
-				(ball_y <= pad1_y + 8'd15)) // Ball collide with paddle1
+				(ball_y <= pad1_y + 8'd16)) // Ball collide with paddle1
 				ball_xdir = ~ball_xdir;
 
 			if 	((~ball_xdir) && (ball_x < pad2_x) &&
 			   	(ball_x > pad2_x - 8'd2) && (ball_y >= pad2_y) && 
-				(ball_y <= pad2_y + 8'd15)) // Ball collide with paddle2
+				(ball_y <= pad2_y + 8'd16)) // Ball collide with paddle2
 				ball_xdir = ~ball_xdir;
 
 			if ((ball_y == 8'd0) || (ball_y == -8'd136))
 				ball_ydir = ~ball_ydir;
-			/*
-			if (ball_x <= 8'd0) // x boundary below paddle 
-				S = GAME_OVER;
-			else
-			*/
+
 			if 	(ball_x <= 8'd0) // Ball boundary x direction
 				S = P2_SCORE;
 			else if (ball_x >= 8'd160)
@@ -301,8 +338,8 @@ parameter
 
 		P1_START:
 		begin
-			ball_x = 8'd40;		// Placement of ball
-			ball_y = 8'd40; 	// Placement of ball
+			ball_x = 8'd20;		// Placement of ball
+			ball_y = 8'd50; 	// Placement of ball
 			ball_x = ball_x + 1'b1; // moves ball right
 			x = ball_x;
 			y = ball_y;
@@ -321,8 +358,8 @@ parameter
 
 		P2_START:
 		begin
-			ball_x = 8'd120;		// Placement of ball
-			ball_y = 8'd40; 		// Placement of ball
+			ball_x = 8'd140;		// Placement of ball
+			ball_y = 8'd50; 		// Placement of ball
 			ball_x = ball_x - 1'b1; // moves ball left
 			x = ball_x;
 			y = ball_y;
@@ -337,6 +374,7 @@ parameter
 			draw = draw + 1'b1;
 			colour = 3'b100;
 			p1_score = 1'b0;
+			p2_score = 1'b0;
 		end
 
 		P2_WIN:
@@ -345,10 +383,38 @@ parameter
 			y = draw[16:8];
 			draw = draw + 1'b1;
 			colour = 3'b001;
+			p1_score = 1'b0;
 			p2_score = 1'b0;
 		end
 
-		GAME_OVER: 
+/*	CURRENTLY DOES NOT WORK
+
+		P1_WIN:
+		begin
+			x = draw[7:0];
+			y = draw[16:8];
+			draw = draw + 1'b1;
+			colour = 3'b000;
+			p1_score = 1'b0;
+			p2_score = 1'b0;
+			S = START_DRAW_FLAG;
+		end
+
+		P2_WIN:
+		begin
+			x = draw[7:0];
+			y = draw[16:8];
+			draw = draw + 1'b1;
+			colour = 3'b000;
+			p1_score = 1'b0;
+			p2_score = 1'b0;
+			S = START_DRAW_FLAG;
+		end
+*/
+
+/*	CURRENTLY DOES NOT WORK
+
+		P1_WIN: 
 		begin
 			if (draw < 17'b10000000000000000)
 			begin
@@ -356,10 +422,102 @@ parameter
 				y = draw[16:8];
 				draw = draw + 1'b1;
 				colour = 3'b100;
+				p1_score = 1'b0;
+				p2_score = 1'b0;
+				light = 1'b0;			
+			end 
+			else 
+			begin
+				draw = 8'b00000000;
+				S = START_DRAW_FLAG;
 			end
 		end
+
+		P2_WIN: 
+		begin
+			if (draw < 17'b10000000000000000)
+			begin
+				x = draw[7:0];
+				y = draw[16:8];
+				draw = draw + 1'b1;
+				colour = 3'b001;
+				p1_score = 1'b0;
+				p2_score = 1'b0;
+				light = 1'b0;
+			end 
+			else 
+			begin
+				draw = 8'b00000000;
+				S = START_DRAW_FLAG;
+			end
+		end
+*/
+
+/*	CURRENTLY DOES NOT WORK
+
+		START_DRAW_FLAG:
+		begin
+			S = INIT_DRAW_FLAG;
+			light = 1'b0;
+		end
+
+		INIT_DRAW_FLAG: 
+		begin
+			counter = appleStart;
+			S = COND_DRAW_FLAG;
+		end
+
+		COND_DRAW_FLAG:
+		begin
+			if (appleBits[counter] == 1'b1)
+				S = DRAW_FLAG;
+			else
+				S = BITCOND_DRAW_FLAG;
+		end
+
+		DRAW_FLAG:
+		begin
+			colour <= 3'b100;
+			x = initX + imageX;
+			y = initY + imageY;
+			S = BITCOND_DRAW_FLAG;
+		end
+
+		BITCOND_DRAW_FLAG:
+		begin
+			if (imageX >= appleWidth)
+				S = INCY_DRAW_FLAG;
+			else
+				S = INCX_DRAW_FLAG;
+		end
+
+		INCX_DRAW_FLAG:
+		begin
+			imageX = imageX + 1'b1;
+			S = DEC_COUNTER_DRAW_FLAG;
+		end
+
+		INCY_DRAW_FLAG:
+		begin
+			imageX <= 64'b0;
+			imageY <= imageY + 1'b1;
+			S = DEC_COUNTER_DRAW_FLAG;
+		end
+
+		DEC_COUNTER_DRAW_FLAG:
+		begin
+			counter = counter - 1'b1;
+			if (imageY < appleHeight)
+				S = COND_DRAW_FLAG;
+			else
+				S = EXIT_DRAW_FLAG;
+		end
+
+		EXIT_DRAW_FLAG: begin end
+*/
+
 	endcase
-	end
+end
 
 // instantiating seven segment for score
 seven_segment p1_s(p1_score, disp_score_p1);
@@ -368,7 +526,7 @@ seven_segment p2_s(p2_score, disp_score_p2);
 endmodule
 	
 
-//display module (from GitHub)
+//Display module (from GitHub)
 module clock (
   input clock,
   output clk

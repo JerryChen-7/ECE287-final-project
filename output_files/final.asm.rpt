@@ -1,5 +1,5 @@
 Assembler report for final
-Mon Nov 14 21:00:40 2022
+Thu Dec 08 09:47:25 2022
 Quartus Prime Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
 
 
@@ -10,7 +10,7 @@ Quartus Prime Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
   2. Assembler Summary
   3. Assembler Settings
   4. Assembler Generated Files
-  5. Assembler Device Options: C:/Users/Jerry Chen/Documents/ECE287/Final Project/project/Final Updated/output_files/final.sof
+  5. Assembler Device Options: D:/College/ECE287/Final Project/project/Final Updated/output_files/final.sof
   6. Assembler Messages
 
 
@@ -38,7 +38,7 @@ https://fpgasoftware.intel.com/eula.
 +---------------------------------------------------------------+
 ; Assembler Summary                                             ;
 +-----------------------+---------------------------------------+
-; Assembler Status      ; Successful - Mon Nov 14 21:00:40 2022 ;
+; Assembler Status      ; Successful - Thu Dec 08 09:47:25 2022 ;
 ; Revision Name         ; final                                 ;
 ; Top-level Entity Name ; final                                 ;
 ; Family                ; Cyclone IV E                          ;
@@ -53,23 +53,23 @@ https://fpgasoftware.intel.com/eula.
 +--------+---------+---------------+
 
 
-+-------------------------------------------------------------------------------------------------+
-; Assembler Generated Files                                                                       ;
-+-------------------------------------------------------------------------------------------------+
-; File Name                                                                                       ;
-+-------------------------------------------------------------------------------------------------+
-; C:/Users/Jerry Chen/Documents/ECE287/Final Project/project/Final Updated/output_files/final.sof ;
-+-------------------------------------------------------------------------------------------------+
++------------------------------------------------------------------------------+
+; Assembler Generated Files                                                    ;
++------------------------------------------------------------------------------+
+; File Name                                                                    ;
++------------------------------------------------------------------------------+
+; D:/College/ECE287/Final Project/project/Final Updated/output_files/final.sof ;
++------------------------------------------------------------------------------+
 
 
-+---------------------------------------------------------------------------------------------------------------------------+
-; Assembler Device Options: C:/Users/Jerry Chen/Documents/ECE287/Final Project/project/Final Updated/output_files/final.sof ;
-+----------------+----------------------------------------------------------------------------------------------------------+
-; Option         ; Setting                                                                                                  ;
-+----------------+----------------------------------------------------------------------------------------------------------+
-; JTAG usercode  ; 0x005B5D89                                                                                               ;
-; Checksum       ; 0x005B5D89                                                                                               ;
-+----------------+----------------------------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------------+
+; Assembler Device Options: D:/College/ECE287/Final Project/project/Final Updated/output_files/final.sof ;
++----------------+---------------------------------------------------------------------------------------+
+; Option         ; Setting                                                                               ;
++----------------+---------------------------------------------------------------------------------------+
+; JTAG usercode  ; 0x005B2743                                                                            ;
+; Checksum       ; 0x005B2743                                                                            ;
++----------------+---------------------------------------------------------------------------------------+
 
 
 +--------------------+
@@ -78,15 +78,15 @@ https://fpgasoftware.intel.com/eula.
 Info: *******************************************************************
 Info: Running Quartus Prime Assembler
     Info: Version 19.1.0 Build 670 09/22/2019 SJ Lite Edition
-    Info: Processing started: Mon Nov 14 21:00:37 2022
+    Info: Processing started: Thu Dec 08 09:47:21 2022
 Info: Command: quartus_asm --read_settings_files=off --write_settings_files=off final -c final
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (115031): Writing out detailed assembly data for power analysis
 Info (115030): Assembler is generating device programming files
 Info: Quartus Prime Assembler was successful. 0 errors, 1 warning
-    Info: Peak virtual memory: 4695 megabytes
-    Info: Processing ended: Mon Nov 14 21:00:40 2022
-    Info: Elapsed time: 00:00:03
+    Info: Peak virtual memory: 4701 megabytes
+    Info: Processing ended: Thu Dec 08 09:47:25 2022
+    Info: Elapsed time: 00:00:04
     Info: Total CPU time (on all processors): 00:00:03
 
 

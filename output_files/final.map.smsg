@@ -1,3 +1,3 @@
-Warning (10268): Verilog HDL information at final.v(84): always construct contains both blocking and non-blocking assignments File: C:/Users/Jerry Chen/Documents/ECE287/Final Project/project/Final Updated/final.v Line: 84
-Info (10281): Verilog HDL Declaration information at final.v(51): object "p1_score" differs only in case from object "P1_SCORE" in the same scope File: C:/Users/Jerry Chen/Documents/ECE287/Final Project/project/Final Updated/final.v Line: 51
-Info (10281): Verilog HDL Declaration information at final.v(52): object "p2_score" differs only in case from object "P2_SCORE" in the same scope File: C:/Users/Jerry Chen/Documents/ECE287/Final Project/project/Final Updated/final.v Line: 52
+Warning (10268): Verilog HDL information at final.v(114): always construct contains both blocking and non-blocking assignments File: D:/College/ECE287/Final Project/project/Final Updated/final.v Line: 114
+Info (10281): Verilog HDL Declaration information at final.v(53): object "p1_score" differs only in case from object "P1_SCORE" in the same scope File: D:/College/ECE287/Final Project/project/Final Updated/final.v Line: 53
+Info (10281): Verilog HDL Declaration information at final.v(54): object "p2_score" differs only in case from object "P2_SCORE" in the same scope File: D:/College/ECE287/Final Project/project/Final Updated/final.v Line: 54
