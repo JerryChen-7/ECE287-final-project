@@ -5,4 +5,4 @@ This project uses verilog and compiled using Intel Quartus Prime 19.1 for the Al
 
 The project goal was to create a 2 player pong-like game on the FPGA.
 
-If the project doesn't work, try the included .zip file instead.
+If the downloaded files doesn't work, try the included pong.zip file instead.
